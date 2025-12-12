@@ -52,7 +52,7 @@ class ProgressController extends AbstractController
 
         return $this->render('progress/new.html.twig', [
             'progress' => $progress,
-            'form' => $form,
+            'Form' => $form,
         ]);
     }
 }

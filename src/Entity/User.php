@@ -1,37 +1,21 @@
 <?php
+// src/Entity/User.php
 
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: '`user`')] // Important if you're using MySQL as 'user' is a reserved word
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column]
-    private ?int $age = null;
-
-    #[ORM\Column]
-    private ?float $weight = null;
-
-    #[ORM\Column]
-    private ?float $height = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $goal = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
@@ -45,81 +29,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Progress::class, orphanRemoval: true)]
-    private Collection $progresses;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $firstName = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: MealPlan::class, orphanRemoval: true)]
-    private Collection $mealPlans;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $lastName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $age = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $weight = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $height = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $goal = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $activityLevel = null;
+
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isBanned = false;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function __construct()
     {
-        $this->progresses = new ArrayCollection();
-        $this->mealPlans = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+        $this->roles = ['ROLE_USER'];
+        $this->isBanned = false;
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getAge(): ?int
-    {
-        return $this->age;
-    }
-
-    public function setAge(int $age): static
-    {
-        $this->age = $age;
-
-        return $this;
-    }
-
-    public function getWeight(): ?float
-    {
-        return $this->weight;
-    }
-
-    public function setWeight(float $weight): static
-    {
-        $this->weight = $weight;
-
-        return $this;
-    }
-
-    public function getHeight(): ?float
-    {
-        return $this->height;
-    }
-
-    public function setHeight(float $height): static
-    {
-        $this->height = $height;
-
-        return $this;
-    }
-
-    public function getGoal(): ?string
-    {
-        return $this->goal;
-    }
-
-    public function setGoal(string $goal): static
-    {
-        $this->goal = $goal;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -164,6 +114,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    /**
      * @see PasswordAuthenticatedUserInterface
      */
     public function getPassword(): string
@@ -178,72 +137,136 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials(): void
+    public function getFirstName(): ?string
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        return $this->firstName;
     }
 
-    /**
-     * @return Collection<int, Progress>
-     */
-    public function getProgresses(): Collection
+    public function setFirstName(?string $firstName): static
     {
-        return $this->progresses;
-    }
-
-    public function addProgress(Progress $progress): static
-    {
-        if (!$this->progresses->contains($progress)) {
-            $this->progresses->add($progress);
-            $progress->setUser($this);
-        }
+        $this->firstName = $firstName;
 
         return $this;
     }
 
-    public function removeProgress(Progress $progress): static
+    public function getLastName(): ?string
     {
-        if ($this->progresses->removeElement($progress)) {
-            // set the owning side to null (unless already changed)
-            if ($progress->getUser() === $this) {
-                $progress->setUser(null);
-            }
-        }
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): static
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, MealPlan>
-     */
-    public function getMealPlans(): Collection
+    public function getAge(): ?int
     {
-        return $this->mealPlans;
+        return $this->age;
     }
 
-    public function addMealPlan(MealPlan $mealPlan): static
+    public function setAge(?int $age): static
     {
-        if (!$this->mealPlans->contains($mealPlan)) {
-            $this->mealPlans->add($mealPlan);
-            $mealPlan->setUser($this);
-        }
+        $this->age = $age;
 
         return $this;
     }
 
-    public function removeMealPlan(MealPlan $mealPlan): static
+    public function getWeight(): ?int
     {
-        if ($this->mealPlans->removeElement($mealPlan)) {
-            // set the owning side to null (unless already changed)
-            if ($mealPlan->getUser() === $this) {
-                $mealPlan->setUser(null);
-            }
-        }
+        return $this->weight;
+    }
+
+    public function setWeight(?int $weight): static
+    {
+        $this->weight = $weight;
 
         return $this;
+    }
+
+    public function getHeight(): ?int
+    {
+        return $this->height;
+    }
+
+    public function setHeight(?int $height): static
+    {
+        $this->height = $height;
+
+        return $this;
+    }
+
+    public function getGoal(): ?string
+    {
+        return $this->goal;
+    }
+
+    public function setGoal(?string $goal): static
+    {
+        $this->goal = $goal;
+
+        return $this;
+    }
+
+    public function getActivityLevel(): ?string
+    {
+        return $this->activityLevel;
+    }
+
+    public function setActivityLevel(?string $activityLevel): static
+    {
+        $this->activityLevel = $activityLevel;
+
+        return $this;
+    }
+
+    public function isBanned(): ?bool
+    {
+        return $this->isBanned;
+    }
+
+    public function setIsBanned(bool $isBanned): static
+    {
+        $this->isBanned = $isBanned;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    // For EasyAdmin display
+    public function __toString(): string
+    {
+        return $this->getFullName() ?? $this->email;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->firstName && $this->lastName
+            ? $this->firstName . ' ' . $this->lastName
+            : null;
     }
 }

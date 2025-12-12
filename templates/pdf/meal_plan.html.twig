@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ mealPlan.title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header {
+            background-color: #1abc9c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .container {
+            padding: 0 30px;
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .summary-table th, .summary-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .summary-table th {
+            background-color: #f2f2f2;
+            width: 30%;
+        }
+        .meal-section {
+            margin-bottom: 20px;
+            border: 1px solid #1abc9c;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        .meal-section h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #1abc9c;
+            padding-bottom: 5px;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .macros-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .macros-table th, .macros-table td {
+            border: 1px solid #eee;
+            padding: 8px;
+            text-align: center;
+        }
+        .macros-table th {
+            background-color: #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>{{ mealPlan.title }}</h1>
+    <p>Generated for {{ mealPlan.user.name }}</p>
+</div>
+
+<div class="container">
+    <h2>Plan Summary</h2>
+    <table class="summary-table">
+        <tr>
+            <th>Target Day</th>
+            <td>{{ mealPlan.day }}</td>
+        </tr>
+        <tr>
+            <th>Total Calories</th>
+            <td>{{ mealPlan.totalCalories }} kcal</td>
+        </tr>
+        <tr>
+            <th>User Goal</th>
+            <td>{{ mealPlan.user.goal }}</td>
+        </tr>
+    </table>
+
+    <h2>Meals in Plan</h2>
+    {% for meal in mealPlan.meals %}
+        <div class="meal-section">
+            <h2>{{ meal.name }}</h2>
+            <p>{{ meal.description }}</p>
+            <table class="macros-table">
+                <thead>
+                <tr>
+                    <th>Calories (kcal)</th>
+                    <th>Protein (g)</th>
+                    <th>Carbs (g)</th>
+                    <th>Fat (g)</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ meal.calories }}</td>
+                    <td>{{ meal.protein }}</td>
+                    <td>{{ meal.carbs }}</td>
+                    <td>{{ meal.fat }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+</div>
+</body>
+</html>

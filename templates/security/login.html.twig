@@ -1,0 +1,295 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login - FitLife Pro{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
+                        <h2 class="mb-0 fw-bold">
+                            <i class="fas fa-sign-in-alt me-2"></i>Welcome Back
+                        </h2>
+                        <p class="mb-0 mt-2 opacity-75">Sign in to access your fitness dashboard</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        <form method="post" action="{{ path('app_login') }}">
+                            {% if error %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ error.messageKey|trans(error.messageData, 'security') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endif %}
+
+                            {% if app.user %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You are already logged in as {{ app.user.email }}.
+                                    <a href="{{ path('app_logout') }}" class="alert-link">Logout</a> or go to
+                                    <a href="{{ path('app_user_dashboard') }}" class="alert-link">Dashboard</a>
+                                </div>
+                            {% endif %}
+
+                            <div class="form-group mb-4">
+                                <label for="username" class="form-label fw-bold">Email</label>
+                                <input type="email"
+                                       value="{{ last_username }}"
+                                       name="_username"  <!-- CHANGED FROM 'email' TO '_username' -->
+                                id="username"
+                                class="form-control form-control-lg"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                                autofocus>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="password" class="form-label fw-bold">Password</label>
+                                <input type="password"
+                                       name="_password"  <!-- CHANGED FROM 'password' TO '_password' -->
+                                id="password"
+                                class="form-control form-control-lg"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required>
+                                <div class="mt-2 text-end">
+                                    <a href="#" class="text-decoration-none small">
+                                        <i class="fas fa-key me-1"></i>Forgot password?
+                                    </a>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" name="_remember_me" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">
+                                    Remember me on this device
+                                </label>
+                            </div>
+
+                            <div class="d-grid gap-2 mb-4">
+                                <button class="btn btn-primary btn-lg py-3 rounded-pill shadow" type="submit">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                                </button>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="text-center">
+                                <p class="mb-3">Don't have an account yet?</p>
+                                <a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-lg rounded-pill">
+                                    <i class="fas fa-user-plus me-2"></i>Create New Account
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center bg-light rounded-bottom-4">
+                        <small class="text-muted">
+                            By signing in, you agree to our <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+
+        .rounded-top-4 {
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+
+        .rounded-bottom-4 {
+            border-radius: 0 0 1rem 1rem !important;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-control-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline-primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        /* Animation for form elements */
+        .form-group {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animations */
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-check { animation-delay: 0.3s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 2rem !important;
+            }
+
+            .btn-lg {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add some interactive effects
+            const emailInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const submitButton = document.querySelector('button[type="submit"]');
+
+            // Add focus effects
+            [emailInput, passwordInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            // Add pulsing animation to submit button
+            let pulseInterval;
+
+            function startPulseAnimation() {
+                pulseInterval = setInterval(() => {
+                    submitButton.classList.add('animate__pulse');
+                    setTimeout(() => {
+                        submitButton.classList.remove('animate__pulse');
+                    }, 1000);
+                }, 3000);
+            }
+
+            function stopPulseAnimation() {
+                clearInterval(pulseInterval);
+            }
+
+            // Start pulse animation after 2 seconds
+            setTimeout(startPulseAnimation, 2000);
+
+            // Stop when form is interacted with
+            document.querySelector('form').addEventListener('input', stopPulseAnimation);
+            document.querySelector('form').addEventListener('submit', stopPulseAnimation);
+
+            // Add floating emoji animation
+            const emojis = ['💪', '🍎', '🏃‍♂️', '🥗', '✨', '🔥', '🌟'];
+            let emojiInterval;
+
+            function createFloatingEmoji() {
+                const emoji = document.createElement('div');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.cssText = `
+                position: fixed;
+                font-size: 1.5rem;
+                opacity: 0.2;
+                z-index: -1;
+                pointer-events: none;
+                animation: floatUp 5s linear forwards;
+                left: ${Math.random() * 100}%;
+                top: 100%;
+            `;
+
+                const keyframes = `
+                @keyframes floatUp {
+                    0% {
+                        transform: translateY(0) rotate(0deg);
+                        opacity: 0.2;
+                    }
+                    100% {
+                        transform: translateY(-100vh) rotate(${Math.random() * 360}deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+
+                const style = document.createElement('style');
+                style.textContent = keyframes;
+                document.head.appendChild(style);
+
+                document.body.appendChild(emoji);
+
+                setTimeout(() => {
+                    emoji.remove();
+                    if (style.parentNode) {
+                        style.remove();
+                    }
+                }, 5000);
+            }
+
+            // Start emoji animation
+            emojiInterval = setInterval(createFloatingEmoji, 3000);
+
+            // Stop after 15 seconds
+            setTimeout(() => {
+                clearInterval(emojiInterval);
+            }, 15000);
+        });
+    </script>
+{% endblock %}

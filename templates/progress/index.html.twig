@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your Progress{% endblock %}
+
+{% block body %}
+    <h1>Your Progress Tracking</h1>
+
+    <a href="{{ path('app_progress_new') }}" class="btn btn-primary">Log New Progress</a>
+
+    {% if progresses is empty %}
+        <p>You haven't logged any progress yet. Start tracking your journey!</p>
+    {% else %}
+        <div class="progress-list">
+            {% for progress in progresses %}
+                <div class="card">
+                    <h3>Log on {{ progress.createdAt|date('Y-m-d H:i') }}</h3>
+                    <p><strong>Weight:</strong> {{ progress.weight }} kg</p>
+                    {% if progress.note %}
+                        <p><strong>Note:</strong> {{ progress.note }}</p>
+                    {% endif %}
+                    {% if progress.photo %}
+                        <p><strong>Photo:</strong> <a href="{{ asset('uploads/photos/' ~ progress.photo) }}" target="_blank">View Photo</a></p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

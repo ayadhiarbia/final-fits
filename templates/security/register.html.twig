@@ -1,0 +1,430 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - Fitness & Meal Plan Generator{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-gradient-primary text-white text-center py-4 rounded-top-4">
+                        <h2 class="mb-0 fw-bold">
+                            <i class="fas fa-user-plus me-2"></i>Create Your Account
+                        </h2>
+                        <p class="mb-0 mt-2 opacity-90">Start your fitness journey today! 🚀</p>
+                    </div>
+                    <div class="card-body p-4 p-md-5">
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                        <!-- First Name & Last Name Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.firstName) }}
+                                    {{ form_widget(registrationForm.firstName) }}
+                                    <div class="invalid-feedback">
+                                        Please enter your first name.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.lastName) }}
+                                    {{ form_widget(registrationForm.lastName) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Row -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.email) }}
+                                    {{ form_widget(registrationForm.email) }}
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email address.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Age, Weight, Height Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.age) }}
+                                    {{ form_widget(registrationForm.age) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.weight) }}
+                                    {{ form_widget(registrationForm.weight) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.height) }}
+                                    {{ form_widget(registrationForm.height) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Goal & Activity Level Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.goal) }}
+                                    {{ form_widget(registrationForm.goal) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.activityLevel) }}
+                                    {{ form_widget(registrationForm.activityLevel) }}
+                                    <small class="form-text text-muted">Optional</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Row -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.plainPassword) }}
+                                    {{ form_widget(registrationForm.plainPassword) }}
+                                    <div class="invalid-feedback">
+                                        Password must be at least 6 characters.
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>Password must be at least 6 characters long.
+                                    </small>
+                                    <div class="password-strength mt-2" id="passwordStrength"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Terms & Conditions -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-check">
+                                    {{ form_widget(registrationForm.agreeTerms) }}
+                                    {{ form_label(registrationForm.agreeTerms) }}
+                                    <div class="invalid-feedback">
+                                        You must agree to the terms and conditions.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg py-3 rounded-pill shadow">
+                                        <i class="fas fa-user-plus me-2"></i>Create Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Login Link -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <p class="mb-0">
+                                        Already have an account?
+                                        <a href="{{ path('app_login') }}" class="text-decoration-none fw-bold text-primary">
+                                            <i class="fas fa-sign-in-alt me-1"></i>Login here
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_end(registrationForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+
+        .rounded-top-4 {
+            border-radius: 1rem 1rem 0 0 !important;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-control-lg {
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        .form-group {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animations */
+        .row.mb-4 .col-md-6:nth-child(1) { animation-delay: 0.1s; }
+        .row.mb-4 .col-md-6:nth-child(2) { animation-delay: 0.2s; }
+        .row.mb-4 .col-md-4:nth-child(1) { animation-delay: 0.3s; }
+        .row.mb-4 .col-md-4:nth-child(2) { animation-delay: 0.4s; }
+        .row.mb-4 .col-md-4:nth-child(3) { animation-delay: 0.5s; }
+        .row.mb-4 .col-md-6:nth-child(4) { animation-delay: 0.6s; }
+        .row.mb-4 .col-md-6:nth-child(5) { animation-delay: 0.7s; }
+
+        /* Password strength indicator */
+        .password-strength {
+            height: 5px;
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        .strength-weak {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e8e 100%);
+            width: 25%;
+        }
+
+        .strength-medium {
+            background: linear-gradient(90deg, #ffa726 0%, #ffb74d 100%);
+            width: 50%;
+        }
+
+        .strength-good {
+            background: linear-gradient(90deg, #42a5f5 0%, #64b5f6 100%);
+            width: 75%;
+        }
+
+        .strength-strong {
+            background: linear-gradient(90deg, #66bb6a 0%, #81c784 100%);
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 2rem !important;
+            }
+
+            .btn-lg {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.needs-validation');
+            const passwordInput = document.querySelector('#registration_form_plainPassword');
+            const passwordStrength = document.getElementById('passwordStrength');
+
+            // Real-time password strength indicator
+            if (passwordInput && passwordStrength) {
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+
+                    // Length check
+                    if (password.length >= 6) strength += 25;
+                    if (password.length >= 8) strength += 25;
+
+                    // Complexity checks
+                    if (/[A-Z]/.test(password)) strength += 25;
+                    if (/[0-9]/.test(password)) strength += 25;
+                    if (/[^A-Za-z0-9]/.test(password)) strength += 25;
+
+                    // Cap at 100%
+                    strength = Math.min(strength, 100);
+
+                    // Update strength indicator
+                    passwordStrength.className = 'password-strength';
+                    if (password.length === 0) {
+                        passwordStrength.style.width = '0%';
+                        passwordStrength.style.backgroundColor = '#e9ecef';
+                    } else if (strength < 25) {
+                        passwordStrength.classList.add('strength-weak');
+                    } else if (strength < 50) {
+                        passwordStrength.classList.add('strength-medium');
+                    } else if (strength < 75) {
+                        passwordStrength.classList.add('strength-good');
+                    } else {
+                        passwordStrength.classList.add('strength-strong');
+                    }
+                });
+            }
+
+            // Form validation
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Add shake animation to invalid fields
+                    const invalidFields = form.querySelectorAll(':invalid');
+                    invalidFields.forEach(field => {
+                        field.classList.add('is-invalid');
+                        field.classList.add('shake-animation');
+
+                        // Remove animation class after animation completes
+                        setTimeout(() => {
+                            field.classList.remove('shake-animation');
+                        }, 500);
+                    });
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+
+            // Add shake animation style
+            const style = document.createElement('style');
+            style.textContent = `
+            .shake-animation {
+                animation: shake 0.5s;
+            }
+
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+
+            .is-invalid {
+                border-color: #dc3545 !important;
+            }
+
+            .is-invalid:focus {
+                box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+            }
+        `;
+            document.head.appendChild(style);
+
+            // Add floating emoji animation
+            const emojis = ['💪', '🍎', '🏃‍♂️', '🥗', '✨', '🌟', '🔥'];
+            let emojiInterval;
+
+            function createFloatingEmoji() {
+                const emoji = document.createElement('div');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.cssText = `
+                position: fixed;
+                font-size: 2rem;
+                opacity: 0.3;
+                z-index: -1;
+                pointer-events: none;
+                animation: floatUp 5s linear forwards;
+                left: ${Math.random() * 100}%;
+                top: 100%;
+            `;
+
+                const keyframes = `
+                @keyframes floatUp {
+                    0% {
+                        transform: translateY(0) rotate(0deg);
+                        opacity: 0.3;
+                    }
+                    100% {
+                        transform: translateY(-100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+
+                const style = document.createElement('style');
+                style.textContent = keyframes;
+                document.head.appendChild(style);
+
+                document.body.appendChild(emoji);
+
+                setTimeout(() => {
+                    emoji.remove();
+                    if (style.parentNode) {
+                        style.remove();
+                    }
+                }, 5000);
+            }
+
+            // Start emoji animation when page loads
+            setTimeout(() => {
+                emojiInterval = setInterval(createFloatingEmoji, 2000);
+
+                // Stop after 10 seconds
+                setTimeout(() => {
+                    clearInterval(emojiInterval);
+                }, 10000);
+            }, 1000);
+        });
+    </script>
+{% endblock %}

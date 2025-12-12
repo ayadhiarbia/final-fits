@@ -2,13 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\MealPlanRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\MealRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: MealPlanRepository::class)]
-class MealPlan
+#[ORM\Entity(repositoryClass: MealRepository::class)]
+class Meal
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,21 +17,23 @@ class MealPlan
     private ?string $title = null;
 
     #[ORM\Column]
-    private ?int $totalCalories = null;
+    private ?int $calories = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $day = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'mealPlans')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(length: 50)]
+    private ?string $type = null; // e.g., breakfast, lunch, dinner, snack
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'meals')]
     private ?User $user = null;
-
-    #[ORM\ManyToMany(targetEntity: Meal::class, inversedBy: 'mealPlans')]
-    private Collection $meals;
 
     public function __construct()
     {
-        $this->meals = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -53,26 +53,50 @@ class MealPlan
         return $this;
     }
 
-    public function getTotalCalories(): ?int
+    public function getCalories(): ?int
     {
-        return $this->totalCalories;
+        return $this->calories;
     }
 
-    public function setTotalCalories(int $totalCalories): static
+    public function setCalories(int $calories): static
     {
-        $this->totalCalories = $totalCalories;
+        $this->calories = $calories;
 
         return $this;
     }
 
-    public function getDay(): ?string
+    public function getDescription(): ?string
     {
-        return $this->day;
+        return $this->description;
     }
 
-    public function setDay(string $day): static
+    public function setDescription(?string $description): static
     {
-        $this->day = $day;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -85,30 +109,6 @@ class MealPlan
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Meal>
-     */
-    public function getMeals(): Collection
-    {
-        return $this->meals;
-    }
-
-    public function addMeal(Meal $meal): static
-    {
-        if (!$this->meals->contains($meal)) {
-            $this->meals->add($meal);
-        }
-
-        return $this;
-    }
-
-    public function removeMeal(Meal $meal): static
-    {
-        $this->meals->removeElement($meal);
 
         return $this;
     }

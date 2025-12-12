@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Workout: {{ workout.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ workout.title }}</h1>
+
+    <div class="card">
+        <p><strong>Level:</strong> {{ workout.level }}</p>
+        <p><strong>Type:</strong> {{ workout.type }}</p>
+        <p><strong>Duration:</strong> {{ workout.duration }} minutes</p>
+        <p><strong>Calories Burned:</strong> {{ workout.caloriesBurned }} kcal</p>
+        <hr>
+        <h3>Description</h3>
+        <p>{{ workout.description|nl2br }}</p>
+    </div>
+
+    <a href="{{ path('app_workout_index') }}" class="btn btn-primary">Back to Workout List</a>
+{% endblock %}

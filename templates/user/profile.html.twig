@@ -1,0 +1,215 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Profile - FitLife Pro{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <div class="avatar-circle bg-gradient-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                                {% if app.user.firstName %}
+                                    <span class="display-4 fw-bold">{{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}</span>
+                                {% else %}
+                                    <i class="fas fa-user fa-4x"></i>
+                                {% endif %}
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ app.user.firstName }} {{ app.user.lastName }}</h5>
+                            <p class="text-muted mb-0">{{ app.user.email }}</p>
+                            <small class="text-muted">Member since {{ app.user.createdAt|date('M Y') }}</small>
+                        </div>
+
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('app_user_dashboard') }}" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-tachometer-alt me-3 text-primary"></i>
+                                Dashboard
+                            </a>
+                            <a href="{{ path('app_user_profile') }}" class="list-group-item list-group-item-action border-0 py-3 active">
+                                <i class="fas fa-user-edit me-3 text-primary"></i>
+                                Edit Profile
+                            </a>
+                            <a href="{{ path('app_user_settings') }}" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-cog me-3 text-primary"></i>
+                                Settings
+                            </a>
+                            <a href="{{ path('app_meal_plan_index') }}" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-utensils me-3 text-primary"></i>
+                                Meal Plans
+                            </a>
+                            <a href="{{ path('app_workout_index') }}" class="list-group-item list-group-item-action border-0 py-3">
+                                <i class="fas fa-dumbbell me-3 text-primary"></i>
+                                Workouts
+                            </a>
+                            <a href="{{ path('app_logout') }}" class="list-group-item list-group-item-action border-0 py-3 text-danger">
+                                <i class="fas fa-sign-out-alt me-3"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-lg rounded-4">
+                    <div class="card-header bg-white border-0 py-4">
+                        <h2 class="fw-bold mb-0">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile
+                        </h2>
+                        <p class="text-muted mb-0">Update your personal information and fitness goals</p>
+                    </div>
+                    <div class="card-body p-4">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                        <!-- Personal Information -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold mb-4 text-primary">
+                                <i class="fas fa-user-circle me-2"></i>Personal Information
+                            </h4>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.firstName) }}
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="invalid-feedback">
+                                            Please enter your first name.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.lastName) }}
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="invalid-feedback">
+                                            Please enter your last name.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.email) }}
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <div class="invalid-feedback">
+                                            Please enter a valid email address.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.age) }}
+                                        {{ form_widget(form.age, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Fitness Information -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold mb-4 text-success">
+                                <i class="fas fa-running me-2"></i>Fitness Information
+                            </h4>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.weight) }}
+                                        {{ form_widget(form.weight, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <small class="form-text text-muted">Enter weight in kilograms (kg)</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.height) }}
+                                        {{ form_widget(form.height, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                        <small class="form-text text-muted">Enter height in centimeters (cm)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Goals & Preferences -->
+                        <div class="mb-5">
+                            <h4 class="fw-bold mb-4 text-warning">
+                                <i class="fas fa-bullseye me-2"></i>Goals & Preferences
+                            </h4>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.goal) }}
+                                        {{ form_widget(form.goal, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <div class="form-group">
+                                        {{ form_label(form.activityLevel) }}
+                                        {{ form_widget(form.activityLevel, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ path('app_user_dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                        <i class="fas fa-arrow-left me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .avatar-circle {
+            transition: transform 0.3s;
+        }
+
+        .avatar-circle:hover {
+            transform: scale(1.05);
+        }
+
+        .list-group-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .form-control-lg {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+        }
+
+        .rounded-4 {
+            border-radius: 1rem !important;
+        }
+
+        @media (max-width: 768px) {
+            .btn-lg {
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+{% endblock %}

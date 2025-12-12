@@ -1,0 +1,387 @@
+{# templates/admin/dashboard.html.twig #}
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
+    <style>
+        .stat-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .recent-item {
+            border-left: 3px solid #007bff;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .activity-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, #4e73df, #224abe) !important;
+            color: white;
+        }
+        .bg-gradient-success {
+            background: linear-gradient(45deg, #1cc88a, #13855c) !important;
+            color: white;
+        }
+        .bg-gradient-info {
+            background: linear-gradient(45deg, #36b9cc, #258391) !important;
+            color: white;
+        }
+        .bg-gradient-warning {
+            background: linear-gradient(45deg, #f6c23e, #dda20a) !important;
+            color: white;
+        }
+    </style>
+{% endblock %}
+
+{% block head_javascript %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+{% endblock %}
+
+{% block content_title %}
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h2 mb-0">FinalFits Dashboard</h1>
+            <p class="text-muted mb-0">Welcome to your administration dashboard</p>
+        </div>
+        <div class="text-muted">
+            {{ "now"|date("F j, Y, g:i a") }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-number">{{ stats.total_users }}</div>
+                            <small>+{{ stats.new_users_today }} today</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card bg-gradient-success text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="stat-label">Active Users</div>
+                            <div class="stat-number">{{ stats.active_users }}</div>
+                            <small>{{ (stats.active_users / stats.total_users * 100)|round(1) }}% active</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-check stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card bg-gradient-info text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="stat-label">Meal Plans</div>
+                            <div class="stat-number">{{ stats.total_meal_plans }}</div>
+                            <small>{{ stats.total_meals }} meals</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card bg-gradient-warning text-white">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="stat-label">Workouts</div>
+                            <div class="stat-number">{{ stats.total_workouts }}</div>
+                            <small>{{ stats.total_progress }} progress entries</small>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dumbbell stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-primary">User Registrations (Last 6 Months)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="registrationsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-success">User Goals Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="goalsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <!-- Recent Users -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-primary">Recent Users</h5>
+                    <a href="{{ ea_url().setController('App\\Controller\\admin\\UserCrudController') }}" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for user in recentActivity.recent_users %}
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar">
+                                        {{ user.firstName|first|upper }}{{ user.lastName|first|upper }}
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ user.firstName }} {{ user.lastName }}</h6>
+                                        <p class="mb-1 text-muted">{{ user.email }}</p>
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-muted">
+                                                <i class="fas fa-bullseye mr-1"></i>
+                                                {{ user.goal ?: 'No goal set' }}
+                                            </small>
+                                            <small class="activity-time">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                {{ user.createdAt|date('M d, H:i') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-users fa-3x mb-3"></i>
+                                <p>No users found</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Progress -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-success">Recent Progress</h5>
+                    <a href="{{ ea_url().setController('App\\Controller\\admin\\ProgressCrudController') }}" class="btn btn-sm btn-success">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for progress in recentActivity.recent_progress %}
+                            <div class="recent-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <strong>
+                                        {% if progress.user %}
+                                            {{ progress.user.firstName }} {{ progress.user.lastName }}
+                                        {% else %}
+                                            Unknown User
+                                        {% endif %}
+                                    </strong>
+                                    <small class="activity-time">{{ progress.createdAt|date('M d, Y') }}</small>
+                                </div>
+                                <div class="d-flex">
+                                    {% if progress.weight %}
+                                        <span class="badge badge-primary mr-2">Weight: {{ progress.weight }}kg</span>
+                                    {% endif %}
+                                    {% if progress.progress %}
+                                        <span class="badge badge-success">Progress: {{ progress.progress }}%</span>
+                                    {% endif %}
+                                </div>
+                                {% if progress.notes %}
+                                    <p class="mt-2 mb-0 text-muted"><small>{{ progress.notes|slice(0, 100) }}{% if progress.notes|length > 100 %}...{% endif %}</small></p>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-chart-line fa-3x mb-3"></i>
+                                <p>No progress entries found</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-info">Quick Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-user-friends fa-2x text-primary mb-2"></i>
+                                <h4>{{ stats.avg_user_age|number_format(1) }}</h4>
+                                <p class="text-muted mb-0">Average User Age</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-chart-pie fa-2x text-success mb-2"></i>
+                                <h4>{{ (stats.active_users / stats.total_users * 100)|round(1) }}%</h4>
+                                <p class="text-muted mb-0">Active Rate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="p-3 border rounded">
+                                <i class="fas fa-plus-circle fa-2x text-warning mb-2"></i>
+                                <h4>{{ stats.new_users_today }}</h4>
+                                <p class="text-muted mb-0">New Users Today</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // User Registrations Chart
+        const registrationsCtx = document.getElementById('registrationsChart').getContext('2d');
+        const registrationsChart = new Chart(registrationsCtx, {
+            type: 'line',
+            data: {
+                labels: {{ chartData.month_labels|json_encode|raw }},
+                datasets: [{
+                    label: 'New Users',
+                    data: {{ chartData.month_data|json_encode|raw }},
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#4e73df',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+        // User Goals Chart
+        const goalsCtx = document.getElementById('goalsChart').getContext('2d');
+        const goalsChart = new Chart(goalsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ chartData.goal_labels|json_encode|raw }},
+                datasets: [{
+                    data: {{ chartData.goal_data|json_encode|raw }},
+                    backgroundColor: {{ chartData.goal_colors|json_encode|raw }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

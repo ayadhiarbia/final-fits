@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log New Progress{% endblock %}
+
+{% block body %}
+    <h1>Log New Progress</h1>
+
+    {{ form_start(form) }}
+    <div class="form-group">
+        {{ form_label(form.weight) }}
+        {{ form_widget(form.weight) }}
+        {{ form_errors(form.weight) }}
+    </div>
+    <div class="form-group">
+        {{ form_label(form.photo) }}
+        {{ form_widget(form.photo) }}
+        {{ form_errors(form.photo) }}
+        <small>Note: Photo upload is simulated in this version.</small>
+    </div>
+    <div class="form-group">
+        {{ form_label(form.note) }}
+        {{ form_widget(form.note) }}
+        {{ form_errors(form.note) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Progress</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_progress_index') }}" class="btn btn-primary">Back to Progress List</a>
+{% endblock %}

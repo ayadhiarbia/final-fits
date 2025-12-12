@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Meal Plan: {{ meal_plan.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ meal_plan.title }}</h1>
+    <p><strong>Day:</strong> {{ meal_plan.day }}</p>
+    <p><strong>Total Calories:</strong> {{ meal_plan.totalCalories }} kcal</p>
+
+    <a href="{{ path('app_meal_plan_pdf', {'id': meal_plan.id}) }}" class="btn btn-primary" style="background-color: #e74c3c;">Download PDF</a>
+    <a href="{{ path('app_meal_plan_index') }}" class="btn btn-primary">Back to List</a>
+
+    <h2>Meals</h2>
+    {% if meal_plan.meals is empty %}
+        <p>No meals found for this plan.</p>
+    {% else %}
+        {% for meal in meal_plan.meals %}
+            <div class="card">
+                <h3>{{ meal.name }}</h3>
+                <p>{{ meal.description }}</p>
+                <p><strong>Calories:</strong> {{ meal.calories }} kcal</p>
+                <p><strong>Macros:</strong> Protein: {{ meal.protein }}g, Carbs: {{ meal.carbs }}g, Fat: {{ meal.fat }}g</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

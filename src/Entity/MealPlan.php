@@ -26,7 +26,7 @@ class MealPlan
 
     #[ORM\ManyToOne(inversedBy: 'usersmeal')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $user = null;
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Meal>
@@ -37,7 +37,7 @@ class MealPlan
     /**
      * @var Collection<int, Meal>
      */
-    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'mealplan')]
+    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'meal_plan')]
     private Collection $mealplan;
 
     public function __construct()
@@ -87,12 +87,12 @@ class MealPlan
         return $this;
     }
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?user $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 

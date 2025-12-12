@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Workout Database{% endblock %}
+
+{% block body %}
+    <h1>Workout Database</h1>
+
+    {% if workouts is empty %}
+        <p>No workouts found in the database.</p>
+    {% else %}
+        <div class="workout-list">
+            {% for workout in workouts %}
+                <div class="card">
+                    <h3>{{ workout.title }}</h3>
+                    <p><strong>Level:</strong> {{ workout.level }}</p>
+                    <p><strong>Type:</strong> {{ workout.type }}</p>
+                    <p><strong>Duration:</strong> {{ workout.duration }} minutes</p>
+                    <p><strong>Calories Burned:</strong> {{ workout.caloriesBurned }} kcal</p>
+                    <a href="{{ path('app_workout_show', {'id': workout.id}) }}" class="btn btn-primary">View Details</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
