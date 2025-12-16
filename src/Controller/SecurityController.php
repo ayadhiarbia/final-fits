@@ -20,7 +20,7 @@ class SecurityController extends AbstractController
         // If user is already logged in, redirect to appropriate dashboard
         if ($this->getUser()) {
             if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
-                return $this->redirectToRoute('admin');
+                return $this->redirectToRoute('admin_dashboard');
             }
             return $this->redirectToRoute('app_user_dashboard');
         }

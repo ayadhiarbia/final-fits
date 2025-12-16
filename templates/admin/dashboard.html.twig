@@ -265,12 +265,9 @@
                                     {% if progress.weight %}
                                         <span class="badge badge-primary mr-2">Weight: {{ progress.weight }}kg</span>
                                     {% endif %}
-                                    {% if progress.progress %}
-                                        <span class="badge badge-success">Progress: {{ progress.progress }}%</span>
-                                    {% endif %}
                                 </div>
-                                {% if progress.notes %}
-                                    <p class="mt-2 mb-0 text-muted"><small>{{ progress.notes|slice(0, 100) }}{% if progress.notes|length > 100 %}...{% endif %}</small></p>
+                                {% if progress.note %}
+                                    <p class="mt-2 mb-0 text-muted"><small>{{ progress.note|slice(0, 100) }}{% if progress.note|length > 100 %}...{% endif %}</small></p>
                                 {% endif %}
                             </div>
                         {% else %}

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MealPlanRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MealPlanRepository::class)]
@@ -17,6 +18,9 @@ class MealPlan
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
 
     #[ORM\Column]
     private ?int $totalCalories = null;
@@ -31,19 +35,12 @@ class MealPlan
     /**
      * @var Collection<int, Meal>
      */
-    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'meals')]
+    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'mealPlan')]  // Changed 'meals' to 'mealPlan'
     private Collection $meals;
-
-    /**
-     * @var Collection<int, Meal>
-     */
-    #[ORM\OneToMany(targetEntity: Meal::class, mappedBy: 'meal_plan')]
-    private Collection $mealplan;
 
     public function __construct()
     {
         $this->meals = new ArrayCollection();
-        $this->mealplan = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -59,7 +56,17 @@ class MealPlan
     public function setTitle(string $title): static
     {
         $this->title = $title;
+        return $this;
+    }
 
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -71,7 +78,6 @@ class MealPlan
     public function setTotalCalories(int $totalCalories): static
     {
         $this->totalCalories = $totalCalories;
-
         return $this;
     }
 
@@ -83,7 +89,6 @@ class MealPlan
     public function setDay(string $day): static
     {
         $this->day = $day;
-
         return $this;
     }
 
@@ -95,7 +100,6 @@ class MealPlan
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -111,7 +115,7 @@ class MealPlan
     {
         if (!$this->meals->contains($meal)) {
             $this->meals->add($meal);
-            $meal->setMeals($this);
+            $meal->setMealPlan($this);
         }
 
         return $this;
@@ -121,41 +125,16 @@ class MealPlan
     {
         if ($this->meals->removeElement($meal)) {
             // set the owning side to null (unless already changed)
-            if ($meal->getMeals() === $this) {
-                $meal->setMeals(null);
+            if ($meal->getMealPlan() === $this) {
+                $meal->setMealPlan(null);
             }
         }
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Meal>
-     */
-    public function getMealplan(): Collection
+    public function __toString(): string
     {
-        return $this->mealplan;
-    }
-
-    public function addMealplan(Meal $mealplan): static
-    {
-        if (!$this->mealplan->contains($mealplan)) {
-            $this->mealplan->add($mealplan);
-            $mealplan->setMealplan($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMealplan(Meal $mealplan): static
-    {
-        if ($this->mealplan->removeElement($mealplan)) {
-            // set the owning side to null (unless already changed)
-            if ($mealplan->getMealplan() === $this) {
-                $mealplan->setMealplan(null);
-            }
-        }
-
-        return $this;
+        return $this->title ?? 'Meal Plan #' . $this->getId();
     }
 }

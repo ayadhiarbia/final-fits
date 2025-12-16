@@ -1,655 +1,1223 @@
-{% extends 'base.html.twig' %}
+{# templates/user/dashboard.html.twig #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FitLife Pro</title>
 
-{% block title %}Dashboard - FitLife Pro{% endblock %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
 
-{% block body %}
-    <div class="container-fluid py-4">
-        <!-- Welcome Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card bg-gradient-primary shadow-lg border-0 rounded-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar-circle bg-white text-primary rounded-circle d-flex align-items-center justify-content-center me-4" style="width: 80px; height: 80px;">
-                                {% if app.user.firstName %}
-                                    <span class="display-6 fw-bold">{{ app.user.firstName|first|upper }}</span>
-                                {% else %}
-                                    <i class="fas fa-user fa-3x"></i>
-                                {% endif %}
-                            </div>
-                            <div>
-                                <h1 class="text-white mb-2">Welcome back, {{ app.user.firstName ? app.user.firstName : 'Fitness Enthusiast' }}! 👋</h1>
-                                <p class="text-white opacity-75 mb-0">
-                                    <i class="fas fa-calendar-alt me-2"></i>{{ "now"|date("l, F j, Y") }}
-                                </p>
-                            </div>
-                            <div class="ms-auto">
-                                <div class="badge bg-white text-primary px-3 py-2 rounded-pill">
-                                    <i class="fas fa-bolt me-2"></i>
-                                    {% if app.user.goal %}
-                                        {{ app.user.goal|replace({'_': ' '})|title }} Mode
-                                    {% else %}
-                                        Ready to Train
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --shadow-neon: 0 0 20px rgba(102, 126, 234, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Vibrant Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            z-index: -1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .logo-icon {
+            background: var(--primary-gradient);
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .logo-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #fff 0%, #a0aec0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .menu-item {
+            margin-bottom: 0.75rem;
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .menu-item:nth-child(1) { animation-delay: 0.1s; }
+        .menu-item:nth-child(2) { animation-delay: 0.2s; }
+        .menu-item:nth-child(3) { animation-delay: 0.3s; }
+        .menu-item:nth-child(4) { animation-delay: 0.4s; }
+        .menu-item:nth-child(5) { animation-delay: 0.5s; }
+        .menu-item:nth-child(6) { animation-delay: 0.6s; }
+        .menu-item:nth-child(7) { animation-delay: 0.7s; }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(10px);
+        }
+
+        .menu-link.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.2) 100%);
+            color: white;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .menu-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .menu-icon {
+            font-size: 1.3rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-badge {
+            margin-left: auto;
+            background: var(--secondary-gradient);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        }
+
+        /* Dynamic Header */
+        .dynamic-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            animation: slideInDown 0.8s ease;
+        }
+
+        .welcome-section h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .user-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--glass-bg);
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .user-details h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #38a169;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #38a169;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #667eea;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            animation: slideInUp 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: #667eea;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Vibrant Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card.meal::before { background: var(--primary-gradient); }
+        .stat-card.workout::before { background: var(--success-gradient); }
+        .stat-card.progress::before { background: var(--warning-gradient); }
+        .stat-card.calorie::before { background: var(--danger-gradient); }
+
+        .stat-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .stat-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-card.meal .stat-icon-wrapper { background: var(--primary-gradient); }
+        .stat-card.workout .stat-icon-wrapper { background: var(--success-gradient); }
+        .stat-card.progress .stat-icon-wrapper { background: var(--warning-gradient); }
+        .stat-card.calorie .stat-icon-wrapper { background: var(--danger-gradient); }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            background: linear-gradient(135deg, #333 0%, #666 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .stat-trend.positive { color: #38a169; }
+        .stat-trend.negative { color: #e53e3e; }
+
+        /* Charts & Goals Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .chart-container, .goals-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            animation: fadeIn 0.8s ease;
+        }
+
+        .chart-header, .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h3, .goals-header h3 {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--glass-bg);
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chart-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .goals-progress {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid #667eea;
+        }
+
+        .goal-item:hover {
+            transform: translateX(10px);
+            background: white;
+        }
+
+        .goal-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .goal-checkbox:checked {
+            background: var(--primary-gradient);
+            border-color: #667eea;
+        }
+
+        .goal-content {
+            flex: 1;
+        }
+
+        .goal-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .goal-desc {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            text-decoration: none;
+            color: #333;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .action-btn:nth-child(1) { animation-delay: 0.5s; }
+        .action-btn:nth-child(2) { animation-delay: 0.6s; }
+        .action-btn:nth-child(3) { animation-delay: 0.7s; }
+        .action-btn:nth-child(4) { animation-delay: 0.8s; }
+
+        .action-btn:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: white;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .action-text {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Flash Messages */
+        .flash-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: slideInDown 0.5s ease;
+        }
+
+        .flash-error {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            animation: slideInDown 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .menu-item {
+                margin-bottom: 0;
+            }
+
+            .menu-link {
+                padding: 0.75rem 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dynamic-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sidebar-menu {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Vibrant Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-heartbeat"></i>
             </div>
+            <span class="logo-text">FitLife Pro</span>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg rounded-4 h-100 hover-lift">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-gradient-blue text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                <i class="fas fa-utensils fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">My Meal Plans</h6>
-                                <h3 class="fw-bold mb-0">0</h3>
-                                <small class="text-muted">+0 this week</small>
-                            </div>
-                        </div>
-                        <a href="{{ path('app_meal_plan_index') }}" class="stretched-link"></a>
-                    </div>
-                </div>
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="{{ path('app_user_dashboard') }}" class="menu-link active">
+                    <i class="menu-icon fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_meal_plan_index') }}" class="menu-link">
+                    <i class="menu-icon fas fa-utensils"></i>
+                    <span>Meal Plans</span>
+                    <span class="menu-badge">New</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_workout_index') }}" class="menu-link">
+                    <i class="menu-icon fas fa-dumbbell"></i>
+                    <span>Workouts</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_progress_index') }}" class="menu-link">
+                    <i class="menu-icon fas fa-chart-line"></i>
+                    <span>Progress</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_user_profile') }}" class="menu-link">
+                    <i class="menu-icon fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_user_settings') }}" class="menu-link">
+                    <i class="menu-icon fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="{{ path('app_logout') }}" class="menu-link">
+                    <i class="menu-icon fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Flash Messages -->
+        {% for message in app.flashes('success') %}
+            <div class="flash-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="flash-error">{{ message }}</div>
+        {% endfor %}
+
+        <!-- Dynamic Header with Profile & Settings -->
+        <header class="dynamic-header">
+            <div class="welcome-section">
+                <h1>Welcome back, {{ app.user.firstName ? app.user.firstName : 'Champion' }}! 🎯</h1>
+                <p>Track your fitness journey and achieve your goals</p>
             </div>
 
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg rounded-4 h-100 hover-lift">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-gradient-green text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                <i class="fas fa-dumbbell fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Completed Workouts</h6>
-                                <h3 class="fw-bold mb-0">0</h3>
-                                <small class="text-muted">+0 this week</small>
-                            </div>
-                        </div>
-                        <a href="{{ path('app_workout_index') }}" class="stretched-link"></a>
+            <div class="user-controls">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {% if app.user.firstName %}
+                            {{ app.user.firstName|first|upper }}
+                        {% else %}
+                            <i class="fas fa-user"></i>
+                        {% endif %}
                     </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg rounded-4 h-100 hover-lift">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-gradient-purple text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                <i class="fas fa-chart-line fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Progress Logs</h6>
-                                <h3 class="fw-bold mb-0">0</h3>
-                                <small class="text-muted">Last: Never</small>
-                            </div>
-                        </div>
-                        <a href="{{ path('app_progress_index') }}" class="stretched-link"></a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-lg rounded-4 h-100 hover-lift">
-                    <div class="card-body p-4">
-                        <div class="d-flex align-items-center">
-                            <div class="icon-circle bg-gradient-orange text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
-                                <i class="fas fa-fire fa-2x"></i>
-                            </div>
-                            <div>
-                                <h6 class="text-muted mb-1">Calories Today</h6>
-                                <h3 class="fw-bold mb-0">0</h3>
-                                <small class="text-muted">Goal: 2000</small>
-                            </div>
-                        </div>
-                        <a href="{{ path('app_meal_plan_generate') }}" class="stretched-link"></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">Quick Actions ⚡</h3>
-                        <p class="text-muted mb-0">Get started with these quick actions</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <a href="{{ path('app_meal_plan_generate') }}" class="btn btn-primary btn-lg w-100 py-3 rounded-pill shadow-sm hover-lift">
-                                    <i class="fas fa-utensils me-2"></i>Generate Meal Plan
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="{{ path('app_workout_index') }}" class="btn btn-success btn-lg w-100 py-3 rounded-pill shadow-sm hover-lift">
-                                    <i class="fas fa-dumbbell me-2"></i>Browse Workouts
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="{{ path('app_progress_new') }}" class="btn btn-info btn-lg w-100 py-3 rounded-pill shadow-sm hover-lift">
-                                    <i class="fas fa-chart-line me-2"></i>Log Progress
-                                </a>
-                            </div>
-                            <div class="col-md-3">
-                                <a href="{{ path('app_user_profile') }}" class="btn btn-warning btn-lg w-100 py-3 rounded-pill shadow-sm hover-lift">
-                                    <i class="fas fa-user-edit me-2"></i>Edit Profile
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Two Column Layout -->
-        <div class="row">
-            <!-- Left Column: Profile & Stats -->
-            <div class="col-lg-8">
-                <!-- User Profile Card -->
-                <div class="card border-0 shadow-lg rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">Your Profile 📋</h3>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <div class="info-card p-3 rounded-3 bg-light-blue">
-                                    <h6 class="text-muted mb-2">Personal Information</h6>
-                                    <p class="mb-2"><i class="fas fa-user me-2 text-primary"></i><strong>Name:</strong> {{ app.user.firstName }} {{ app.user.lastName }}</p>
-                                    <p class="mb-2"><i class="fas fa-envelope me-2 text-primary"></i><strong>Email:</strong> {{ app.user.email }}</p>
-                                    <p class="mb-2"><i class="fas fa-birthday-cake me-2 text-primary"></i><strong>Age:</strong> {{ app.user.age ?? 'Not set' }}</p>
-                                    <p class="mb-0"><i class="fas fa-calendar-plus me-2 text-primary"></i><strong>Member Since:</strong> {{ app.user.createdAt|date('M d, Y') }}</p>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="info-card p-3 rounded-3 bg-light-green">
-                                    <h6 class="text-muted mb-2">Fitness Stats</h6>
-                                    <p class="mb-2"><i class="fas fa-weight me-2 text-success"></i><strong>Weight:</strong> {{ app.user.weight ?? 'Not set' }} kg</p>
-                                    <p class="mb-2"><i class="fas fa-ruler-vertical me-2 text-success"></i><strong>Height:</strong> {{ app.user.height ?? 'Not set' }} cm</p>
-                                    <p class="mb-2"><i class="fas fa-running me-2 text-success"></i><strong>Activity Level:</strong>
-                                        {% if app.user.activityLevel %}
-                                            {{ app.user.activityLevel|replace({'_': ' '})|title }}
-                                        {% else %}
-                                            Not set
-                                        {% endif %}
-                                    </p>
-                                    <p class="mb-0"><i class="fas fa-bullseye me-2 text-success"></i><strong>Goal:</strong>
-                                        {% if app.user.goal == 'weight_loss' %}
-                                            <span class="badge bg-danger">Weight Loss</span>
-                                        {% elseif app.user.goal == 'muscle_gain' %}
-                                            <span class="badge bg-warning">Muscle Gain</span>
-                                        {% elseif app.user.goal == 'maintain' %}
-                                            <span class="badge bg-info">Maintain Weight</span>
-                                        {% elseif app.user.goal == 'improve_fitness' %}
-                                            <span class="badge bg-success">Improve Fitness</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Not set</span>
-                                        {% endif %}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Progress Summary -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="progress-section">
-                                    <h6 class="text-muted mb-3">Weekly Progress</h6>
-                                    <div class="progress mb-2" style="height: 20px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                            Meal Plans: 25%
-                                        </div>
-                                    </div>
-                                    <div class="progress mb-2" style="height: 20px;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">
-                                            Workouts: 40%
-                                        </div>
-                                    </div>
-                                    <div class="progress mb-2" style="height: 20px;">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 15%" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">
-                                            Progress Logs: 15%
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="user-details">
+                        <h3>{{ app.user.firstName ? app.user.firstName ~ ' ' ~ app.user.lastName : 'FitLife User' }}</h3>
+                        <div class="user-status">
+                            <span class="status-dot"></span>
+                            <span>Online • {{ app.user.goal ? app.user.goal|replace({'_': ' '})|title : 'Muscle Gain' }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Activity -->
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">Recent Activity 📝</h3>
+                <div class="header-icons">
+                    <div class="icon-btn profile-btn" onclick="location.href='{{ path('app_user_profile') }}'" title="Profile">
+                        <i class="fas fa-user-circle"></i>
                     </div>
-                    <div class="card-body p-4">
-                        <div class="activity-timeline">
-                            <div class="activity-item d-flex mb-3">
-                                <div class="activity-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-0 fw-bold">Welcome to FitLife Pro!</p>
-                                    <small class="text-muted">Account created on {{ app.user.createdAt|date('M d, Y') }}</small>
-                                </div>
-                            </div>
-
-                            <div class="activity-item d-flex mb-3">
-                                <div class="activity-icon bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-0 fw-bold">You logged in</p>
-                                    <small class="text-muted">Just now</small>
-                                </div>
-                            </div>
-
-                            <!-- Placeholder for future activities -->
-                            <div class="activity-item d-flex mb-3">
-                                <div class="activity-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                    <i class="fas fa-lightbulb"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-0 fw-bold">Tip: Complete your profile</p>
-                                    <small class="text-muted">Add your weight, height and goals for better recommendations</small>
-                                </div>
-                            </div>
-
-                            <div class="activity-item d-flex">
-                                <div class="activity-icon bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                    <i class="fas fa-rocket"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <p class="mb-0 fw-bold">Ready to begin!</p>
-                                    <small class="text-muted">Start by generating your first meal plan</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-4">
-                            <a href="{{ path('app_progress_index') }}" class="btn btn-outline-primary">
-                                <i class="fas fa-history me-2"></i>View Full Activity History
+                    <div class="icon-btn settings-btn" id="settingsBtn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                        <div class="dropdown-menu" id="settingsMenu">
+                            <a href="{{ path('app_user_settings') }}" class="dropdown-item">
+                                <i class="fas fa-sliders-h"></i>
+                                <span>Settings</span>
                             </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Column: Quick Tips & Goals -->
-            <div class="col-lg-4">
-                <!-- Daily Tip -->
-                <div class="card border-0 shadow-lg rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">💡 Daily Tip</h3>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="tip-card p-3 rounded-3 bg-light-yellow">
-                            <h5 class="fw-bold mb-2">Stay Hydrated!</h5>
-                            <p class="mb-0">Drink at least 8 glasses of water today. Proper hydration boosts metabolism and helps with weight management.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Weekly Goals -->
-                <div class="card border-0 shadow-lg rounded-4 mb-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">🎯 Weekly Goals</h3>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="goals-list">
-                            <div class="goal-item d-flex align-items-center mb-3">
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="checkbox" id="goal1">
-                                </div>
-                                <div>
-                                    <label class="form-check-label" for="goal1">
-                                        <span class="fw-bold">Generate 2 meal plans</span>
-                                        <small class="d-block text-muted">Plan your nutrition for the week</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="goal-item d-flex align-items-center mb-3">
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="checkbox" id="goal2">
-                                </div>
-                                <div>
-                                    <label class="form-check-label" for="goal2">
-                                        <span class="fw-bold">Complete 3 workouts</span>
-                                        <small class="d-block text-muted">Stay consistent with exercise</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="goal-item d-flex align-items-center mb-3">
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="checkbox" id="goal3">
-                                </div>
-                                <div>
-                                    <label class="form-check-label" for="goal3">
-                                        <span class="fw-bold">Log progress 2 times</span>
-                                        <small class="d-block text-muted">Track your improvements</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="goal-item d-flex align-items-center">
-                                <div class="form-check me-3">
-                                    <input class="form-check-input" type="checkbox" id="goal4">
-                                </div>
-                                <div>
-                                    <label class="form-check-label" for="goal4">
-                                        <span class="fw-bold">Update profile info</span>
-                                        <small class="d-block text-muted">Keep your stats current</small>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="progress mt-4" style="height: 10px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <small class="text-muted d-block text-center mt-2">0% completed</small>
-                    </div>
-                </div>
-
-                <!-- Quick Links -->
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h3 class="mb-0 fw-bold">🔗 Quick Links</h3>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="list-group list-group-flush">
-                            <a href="{{ path('app_meal_plan_index') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-utensils me-3 text-primary"></i>
-                                <span>My Meal Plans</span>
+                            <a href="{{ path('app_user_profile') }}" class="dropdown-item">
+                                <i class="fas fa-user-edit"></i>
+                                <span>Edit Profile</span>
                             </a>
-                            <a href="{{ path('app_workout_index') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-dumbbell me-3 text-success"></i>
-                                <span>Workout Library</span>
-                            </a>
-                            <a href="{{ path('app_progress_index') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-chart-line me-3 text-info"></i>
-                                <span>Progress Tracking</span>
-                            </a>
-                            <a href="{{ path('app_user_profile') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-user-cog me-3 text-warning"></i>
-                                <span>Account Settings</span>
-                            </a>
-                            <a href="{{ path('app_logout') }}" class="list-group-item list-group-item-action border-0 py-3 text-danger">
-                                <i class="fas fa-sign-out-alt me-3"></i>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">
+                                <i class="fas fa-sign-out-alt"></i>
                                 <span>Logout</span>
                             </a>
                         </div>
                     </div>
                 </div>
             </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <!-- Meal Plans Card -->
+            <div class="stat-card meal">
+                <div class="stat-content">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="counter" data-target="0">0</h3>
+                        <p>My Meal Plans</p>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+0 this week</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workouts Card -->
+            <div class="stat-card workout">
+                <div class="stat-content">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="counter" data-target="0">0</h3>
+                        <p>Completed Workouts</p>
+                        <div class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+0 this week</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="stat-card progress">
+                <div class="stat-content">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 class="counter" data-target="0">0</h3>
+                        <p>Progress Logs</p>
+                        <div class="stat-trend">
+                            <i class="fas fa-clock"></i>
+                            <span>Start tracking!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calories Card -->
+            <div class="stat-card calorie">
+                <div class="stat-content">
+                    <div class="stat-icon-wrapper">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>
+                            <span class="counter" data-target="0">0</span>
+                            <small>/2000</small>
+                        </h3>
+                        <p>Calories Today</p>
+                        <div class="stat-trend negative">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Track your meals</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <style>
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+        <!-- Charts & Goals Section -->
+        <div class="charts-section">
+            <!-- Activity Chart -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Weekly Activity Overview</h3>
+                    <div class="chart-actions">
+                        <button class="chart-btn active">Week</button>
+                        <button class="chart-btn">Month</button>
+                        <button class="chart-btn">Year</button>
+                    </div>
+                </div>
+                <div style="height: 250px;">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
 
-        .bg-gradient-blue {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
+            <!-- Goals -->
+            <div class="goals-container">
+                <div class="goals-header">
+                    <h3>Weekly Goals</h3>
+                    <span class="goals-progress" id="goalsPercentage">0%</span>
+                </div>
+                <div class="goals-list">
+                    {% set goals = [
+                        {id: 'goal1', text: 'Generate 2 meal plans', desc: 'Plan your nutrition', progress: 0},
+                        {id: 'goal2', text: 'Complete 3 workouts', desc: 'Stay consistent', progress: 0},
+                        {id: 'goal3', text: 'Log progress 2 times', desc: 'Track improvements', progress: 0},
+                        {id: 'goal4', text: 'Update profile info', desc: 'Keep stats current', progress: 0}
+                    ] %}
 
-        .bg-gradient-green {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
+                    {% for goal in goals %}
+                        <div class="goal-item">
+                            <input type="checkbox" class="goal-checkbox" id="{{ goal.id }}">
+                            <div class="goal-content">
+                                <div class="goal-text">{{ goal.text }}</div>
+                                <div class="goal-desc">{{ goal.desc }}</div>
+                            </div>
+                            <div class="goal-progress">
+                                <div class="goal-progress-bar" style="width: {{ goal.progress }}%"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
 
-        .bg-gradient-purple {
-            background: linear-gradient(135deg, #8a2387 0%, #f27121 100%);
-        }
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            {% set actions = [
+                {path: 'app_meal_plan_generate', icon: 'utensils', text: 'Generate Meal Plan'},
+                {path: 'app_workout_index', icon: 'dumbbell', text: 'Browse Workouts'},
+                {path: 'app_progress_new', icon: 'chart-line', text: 'Log Progress'},
+                {path: 'app_user_profile', icon: 'user-edit', text: 'Edit Profile'}
+            ] %}
 
-        .bg-gradient-orange {
-            background: linear-gradient(135deg, #f12711 0%, #f5af19 100%);
-        }
+            {% for action in actions %}
+                <a href="{{ path(action.path) }}" class="action-btn">
+                    <i class="action-icon fas fa-{{ action.icon }}"></i>
+                    <span class="action-text">{{ action.text }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </main>
+</div>
 
-        .bg-light-blue {
-            background-color: #e3f2fd;
-        }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Settings dropdown
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsMenu = document.getElementById('settingsMenu');
 
-        .bg-light-green {
-            background-color: #e8f5e9;
-        }
+        settingsBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            settingsMenu.classList.toggle('show');
+        });
 
-        .bg-light-yellow {
-            background-color: #fffde7;
-        }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+            settingsMenu.classList.remove('show');
+        });
 
-        .avatar-circle {
-            transition: transform 0.3s;
-        }
+        // Animated counters
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            let count = 0;
+            const increment = target / 50;
 
-        .avatar-circle:hover {
-            transform: scale(1.05);
-        }
-
-        .icon-circle {
-            transition: all 0.3s;
-        }
-
-        .hover-lift {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-        }
-
-        .card.hover-lift:hover .icon-circle {
-            transform: rotate(5deg) scale(1.1);
-        }
-
-        .info-card {
-            transition: transform 0.3s;
-            height: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateY(-3px);
-        }
-
-        .tip-card {
-            border-left: 4px solid #ffc107;
-        }
-
-        .activity-item {
-            padding: 10px;
-            border-radius: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .activity-item:hover {
-            background-color: rgba(0,0,0,0.02);
-        }
-
-        .goal-item {
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color 0.3s;
-        }
-
-        .goal-item:hover {
-            background-color: rgba(0,0,0,0.02);
-        }
-
-        .list-group-item {
-            transition: all 0.3s;
-        }
-
-        .list-group-item:hover {
-            background-color: rgba(0,0,0,0.02);
-            padding-left: 20px !important;
-        }
-
-        .rounded-4 {
-            border-radius: 1rem !important;
-        }
-
-        .progress-bar {
-            border-radius: 10px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        @media (max-width: 768px) {
-            .btn-lg {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .display-4 {
-                font-size: 2rem;
-            }
-
-            .card-body {
-                padding: 1.5rem !important;
-            }
-        }
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate numbers on cards
-            const counters = document.querySelectorAll('.fw-bold.mb-0');
-            counters.forEach(counter => {
-                if (counter.textContent === '0') {
-                    const target = parseInt(counter.parentElement.nextElementSibling?.textContent?.match(/\d+/) || 0) + 1;
-                    let current = 0;
-
-                    const updateCounter = () => {
-                        if (current < target) {
-                            current += 0.1;
-                            counter.textContent = Math.floor(current);
-                            setTimeout(updateCounter, 50);
-                        }
-                    };
-
-                    // Start animation after a delay
-                    setTimeout(updateCounter, 1000);
+            const updateCounter = () => {
+                if (count < target) {
+                    count += increment;
+                    counter.textContent = Math.ceil(count);
+                    setTimeout(updateCounter, 30);
+                } else {
+                    counter.textContent = target;
                 }
-            });
+            };
 
-            // Handle goal checkboxes
-            const checkboxes = document.querySelectorAll('.goal-item input[type="checkbox"]');
-            const progressBar = document.querySelector('.progress-bar.bg-success');
+            setTimeout(updateCounter, 800);
+        });
 
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const checkedCount = document.querySelectorAll('.goal-item input[type="checkbox"]:checked').length;
-                    const totalCount = checkboxes.length;
-                    const percentage = (checkedCount / totalCount) * 100;
-
-                    // Animate progress bar
-                    let currentWidth = parseFloat(progressBar.style.width) || 0;
-                    const targetWidth = percentage;
-
-                    const animateProgress = () => {
-                        if (currentWidth < targetWidth) {
-                            currentWidth += 1;
-                            progressBar.style.width = currentWidth + '%';
-                            progressBar.setAttribute('aria-valuenow', currentWidth);
-                            setTimeout(animateProgress, 20);
-                        }
-                    };
-
-                    animateProgress();
-
-                    // Update percentage text
-                    const percentageText = progressBar.nextElementSibling;
-                    if (percentageText) {
-                        percentageText.textContent = `${Math.round(percentage)}% completed`;
+        // Activity Chart
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Meal Plans',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
+                    },
+                    {
+                        label: 'Workouts',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#43e97b',
+                        backgroundColor: 'rgba(67, 233, 123, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#43e97b',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5
                     }
-                });
-            });
-
-            // Welcome notification
-            setTimeout(() => {
-                const notification = document.createElement('div');
-                notification.className = 'alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3';
-                notification.style.zIndex = '1050';
-                notification.style.maxWidth = '350px';
-                notification.innerHTML = `
-                <i class="fas fa-fire me-2"></i>
-                <strong>Let's get started!</strong> Your fitness journey begins now.
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-                document.body.appendChild(notification);
-
-                // Auto remove after 5 seconds
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 5000);
-            }, 1500);
-
-            // Add confetti on first visit (check local storage)
-            if (!localStorage.getItem('fitlife_welcome_shown')) {
-                setTimeout(() => {
-                    createConfetti();
-                    localStorage.setItem('fitlife_welcome_shown', 'true');
-                }, 2000);
-            }
-
-            function createConfetti() {
-                const colors = ['#667eea', '#764ba2', '#11998e', '#38ef7d', '#f12711', '#f5af19'];
-                for (let i = 0; i < 30; i++) {
-                    const confetti = document.createElement('div');
-                    confetti.style.cssText = `
-                    position: fixed;
-                    width: 10px;
-                    height: 10px;
-                    background: ${colors[Math.floor(Math.random() * colors.length)]};
-                    border-radius: 50%;
-                    top: 0;
-                    left: ${Math.random() * 100}%;
-                    pointer-events: none;
-                    z-index: 9999;
-                    animation: confetti-fall ${Math.random() * 1 + 1}s linear forwards;
-                `;
-
-                    const keyframes = `
-                    @keyframes confetti-fall {
-                        0% {
-                            transform: translateY(0) rotate(0deg);
-                            opacity: 1;
-                        }
-                        100% {
-                            transform: translateY(100vh) rotate(${Math.random() * 360}deg);
-                            opacity: 0;
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12
+                            }
                         }
                     }
-                `;
-
-                    const style = document.createElement('style');
-                    style.textContent = keyframes;
-                    document.head.appendChild(style);
-
-                    document.body.appendChild(confetti);
-                    setTimeout(() => {
-                        confetti.remove();
-                        if (style.parentNode) {
-                            style.remove();
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
                         }
-                    }, 2000);
+                    }
                 }
             }
         });
-    </script>
-{% endblock %}
+
+        // Update chart with sample data
+        setTimeout(() => {
+            activityChart.data.datasets[0].data = [1, 0, 2, 1, 0, 1, 0];
+            activityChart.data.datasets[1].data = [0, 1, 0, 2, 1, 0, 1];
+            activityChart.update();
+        }, 1500);
+
+        // Goals functionality
+        const goalCheckboxes = document.querySelectorAll('.goal-checkbox');
+        const goalsPercentage = document.getElementById('goalsPercentage');
+
+        function updateGoalsProgress() {
+            const checkedCount = document.querySelectorAll('.goal-checkbox:checked').length;
+            const totalCount = goalCheckboxes.length;
+            const percentage = Math.round((checkedCount / totalCount) * 100);
+
+            goalsPercentage.textContent = `${percentage}%`;
+
+            // Update progress bars
+            goalCheckboxes.forEach((checkbox, index) => {
+                const progressBar = checkbox.closest('.goal-item').querySelector('.goal-progress-bar');
+                progressBar.style.width = checkbox.checked ? '100%' : '0%';
+            });
+        }
+
+        goalCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateGoalsProgress);
+        });
+
+        // Chart period buttons
+        const chartBtns = document.querySelectorAll('.chart-btn');
+        chartBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                chartBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+
+                const period = this.textContent.toLowerCase();
+                let data1, data2;
+
+                switch(period) {
+                    case 'week':
+                        data1 = [1, 0, 2, 1, 0, 1, 0];
+                        data2 = [0, 1, 0, 2, 1, 0, 1];
+                        break;
+                    case 'month':
+                        data1 = Array.from({length: 30}, () => Math.floor(Math.random() * 3));
+                        data2 = Array.from({length: 30}, () => Math.floor(Math.random() * 3));
+                        break;
+                    case 'year':
+                        data1 = Array.from({length: 12}, () => Math.floor(Math.random() * 10));
+                        data2 = Array.from({length: 12}, () => Math.floor(Math.random() * 10));
+                        break;
+                }
+
+                activityChart.data.datasets[0].data = data1;
+                activityChart.data.datasets[1].data = data2;
+                activityChart.update();
+            });
+        });
+
+        // Add motivational notification
+        setTimeout(() => {
+            if (!sessionStorage.getItem('fitlife_welcome')) {
+                showNotification('Welcome to FitLife Pro! 🎉 Start your fitness journey today!');
+                sessionStorage.setItem('fitlife_welcome', 'true');
+            }
+        }, 1000);
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+                    z-index: 9999;
+                    animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+                    max-width: 300px;
+                `;
+            notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-fire" style="font-size: 1.2rem;"></i>
+                        <div>
+                            <strong>FitLife Pro</strong>
+                            <div style="font-size: 0.9rem; margin-top: 5px;">${message}</div>
+                        </div>
+                    </div>
+                `;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Add animation for elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card, .action-btn').forEach(el => {
+            observer.observe(el);
+        });
+    });
+
+    // CSS for notification animation
+    const style = document.createElement('style');
+    style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+        `;
+    document.head.appendChild(style);
+</script>
+</body>
+</html>

@@ -24,7 +24,7 @@ class DashboardController extends AbstractDashboardController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/admin', name: 'admin', methods: ['GET'])]
+    #[Route('/admin', name: 'admin', methods: ['GET', 'POST'])]
     public function index(): Response
     {
         // Get statistics for the dashboard

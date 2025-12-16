@@ -9,8 +9,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -27,8 +25,9 @@ class MealPlanCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Meal Plan')
             ->setEntityLabelInPlural('Meal Plans')
-            ->setSearchFields(['name', 'description'])
-           ;
+            // Update search fields to match what exists in your entity
+            ->setSearchFields(['title', 'day'])
+            ;
     }
 
     public function configureFields(string $pageName): iterable
@@ -38,35 +37,20 @@ class MealPlanCrudController extends AbstractCrudController
             IdField::new('id')->onlyOnIndex(),
 
             // Basic info
-            TextField::new('name')->setLabel('Meal Plan Name'),
+            TextField::new('title')->setLabel('Meal Plan Name'), // NOT 'name'
             TextEditorField::new('description')->setLabel('Description'),
 
-            // Diet type choice
-            ChoiceField::new('dietType')
-                ->setChoices([
-                    'Balanced' => 'balanced',
-                    'Keto' => 'keto',
-                    'Vegetarian' => 'vegetarian',
-                    'Vegan' => 'vegan',
-                    'Low Carb' => 'low_carb',
-                    'High Protein' => 'high_protein',
-                ])
-                ->setLabel('Diet Type'),
 
-            // Duration and nutrition
-            IntegerField::new('durationDays')->setLabel('Duration (days)'),
-            NumberField::new('dailyCalories')->setLabel('Daily Calories'),
-            NumberField::new('proteinRatio')->setLabel('Protein %'),
-            NumberField::new('carbRatio')->setLabel('Carbs %'),
-            NumberField::new('fatRatio')->setLabel('Fat %'),
+            IntegerField::new('totalCalories')->setLabel('Total Calories'), // NOT 'dailyCalories'
+            TextField::new('day')->setLabel('Day of Week'),
 
-            // Associations
-            AssociationField::new('user')->setRequired(false)->setLabel('Assigned User'),
-            AssociationField::new('meals')->autocomplete()->setLabel('Meals'),
 
-            // Timestamps, only on index
+            // Associations that exist:
+            AssociationField::new('user')->setRequired(true)->setLabel('User'),
+            AssociationField::new('meals')->setLabel('Meals'),
+
+            // Timestamps - only createdAt exists, not updatedAt
             DateTimeField::new('createdAt')->onlyOnIndex()->setLabel('Created At'),
-            DateTimeField::new('updatedAt')->onlyOnIndex()->setLabel('Updated At'),
         ];
     }
 }

@@ -31,6 +31,11 @@ class Meal
     #[ORM\ManyToOne(inversedBy: 'meals')]
     private ?User $user = null;
 
+    // ADDED: Relationship to MealPlan
+    #[ORM\ManyToOne(inversedBy: 'meals', targetEntity: MealPlan::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?MealPlan $mealPlan = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -111,5 +116,23 @@ class Meal
         $this->user = $user;
 
         return $this;
+    }
+
+    // ADDED: Getter and setter for mealPlan
+    public function getMealPlan(): ?MealPlan
+    {
+        return $this->mealPlan;
+    }
+
+    public function setMealPlan(?MealPlan $mealPlan): static
+    {
+        $this->mealPlan = $mealPlan;
+        return $this;
+    }
+
+    // ADD THIS METHOD TO FIX THE ERROR
+    public function __toString(): string
+    {
+        return $this->title ?? 'Meal #' . $this->getId();
     }
 }
