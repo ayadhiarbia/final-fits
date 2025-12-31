@@ -550,7 +550,6 @@
         .action-btn:nth-child(1) { animation-delay: 0.5s; }
         .action-btn:nth-child(2) { animation-delay: 0.6s; }
         .action-btn:nth-child(3) { animation-delay: 0.7s; }
-        .action-btn:nth-child(4) { animation-delay: 0.8s; }
 
         .action-btn:hover {
             transform: translateY(-10px) scale(1.05);
@@ -761,12 +760,7 @@
                     <span>Profile</span>
                 </a>
             </li>
-            <li class="menu-item">
-                <a href="{{ path('app_user_settings') }}" class="menu-link">
-                    <i class="menu-icon fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
+
             <li class="menu-item">
                 <a href="{{ path('app_logout') }}" class="menu-link">
                     <i class="menu-icon fas fa-sign-out-alt"></i>
@@ -818,10 +812,7 @@
                     <div class="icon-btn settings-btn" id="settingsBtn" title="Settings">
                         <i class="fas fa-cog"></i>
                         <div class="dropdown-menu" id="settingsMenu">
-                            <a href="{{ path('app_user_settings') }}" class="dropdown-item">
-                                <i class="fas fa-sliders-h"></i>
-                                <span>Settings</span>
-                            </a>
+
                             <a href="{{ path('app_user_profile') }}" class="dropdown-item">
                                 <i class="fas fa-user-edit"></i>
                                 <span>Edit Profile</span>
@@ -936,7 +927,7 @@
                 </div>
                 <div class="goals-list">
                     {% set goals = [
-                        {id: 'goal1', text: 'Generate 2 meal plans', desc: 'Plan your nutrition', progress: 0},
+                        {id: 'goal1', text: 'Browse meal plans', desc: 'Explore nutrition options', progress: 0},
                         {id: 'goal2', text: 'Complete 3 workouts', desc: 'Stay consistent', progress: 0},
                         {id: 'goal3', text: 'Log progress 2 times', desc: 'Track improvements', progress: 0},
                         {id: 'goal4', text: 'Update profile info', desc: 'Keep stats current', progress: 0}
@@ -961,10 +952,9 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
             {% set actions = [
-                {path: 'app_meal_plan_generate', icon: 'utensils', text: 'Generate Meal Plan'},
+                {path: 'app_meal_plan_index', icon: 'utensils', text: 'Browse Meal Plans'},
                 {path: 'app_workout_index', icon: 'dumbbell', text: 'Browse Workouts'},
-                {path: 'app_progress_new', icon: 'chart-line', text: 'Log Progress'},
-                {path: 'app_user_profile', icon: 'user-edit', text: 'Edit Profile'}
+                {path: 'app_progress_new', icon: 'chart-line', text: 'Log Progress'}
             ] %}
 
             {% for action in actions %}
@@ -980,19 +970,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Settings dropdown
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsMenu = document.getElementById('settingsMenu');
 
-        settingsBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            settingsMenu.classList.toggle('show');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-            settingsMenu.classList.remove('show');
-        });
 
         // Animated counters
         const counters = document.querySelectorAll('.counter');

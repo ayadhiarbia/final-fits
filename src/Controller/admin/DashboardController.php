@@ -14,7 +14,10 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/admin')]
+#[IsGranted('ROLE_ADMIN')]  // ← ADD THIS CLASS-LEVEL ATTRIBUTE
 class DashboardController extends AbstractDashboardController
 {
     private $entityManager;
@@ -24,7 +27,7 @@ class DashboardController extends AbstractDashboardController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/admin', name: 'admin', methods: ['GET', 'POST'])]
+    #[Route('', name: 'admin', methods: ['GET', 'POST'])]
     public function index(): Response
     {
         // Get statistics for the dashboard

@@ -1,215 +1,639 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 My Profile - FitLife Pro</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css for subtle animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary: #ff6b9d;
+            --primary-light: #ffb8d0;
+            --secondary: #6a5af9;
+            --accent: #42e2b8;
+            --light: #f9f7ff;
+            --dark: #2d2b55;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-{% block title %}My Profile - FitLife Pro{% endblock %}
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
 
-{% block body %}
-    <div class="container py-5">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-lg-3 mb-4">
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-body p-4">
-                        <div class="text-center mb-4">
-                            <div class="avatar-circle bg-gradient-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
-                                {% if app.user.firstName %}
-                                    <span class="display-4 fw-bold">{{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}</span>
-                                {% else %}
-                                    <i class="fas fa-user fa-4x"></i>
-                                {% endif %}
-                            </div>
-                            <h5 class="fw-bold mb-1">{{ app.user.firstName }} {{ app.user.lastName }}</h5>
-                            <p class="text-muted mb-0">{{ app.user.email }}</p>
-                            <small class="text-muted">Member since {{ app.user.createdAt|date('M Y') }}</small>
+        body {
+            background: linear-gradient(135deg, #f9f7ff 0%, #f0edff 100%);
+            min-height: 100vh;
+            padding-top: 20px;
+            color: var(--dark);
+        }
+
+        h1, h2, h3, h4, h5, h6, .fw-bold {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Sidebar Card */
+        .sidebar-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border: none;
+            box-shadow: var(--shadow);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 107, 157, 0.1);
+        }
+
+        .sidebar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.15);
+        }
+
+        /* Avatar */
+        .avatar-circle {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            transition: var(--transition);
+            border: 4px solid white;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+        }
+
+        .avatar-circle:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Navigation Items */
+        .nav-item {
+            margin-bottom: 8px;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .nav-item a {
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: #666;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 107, 157, 0.1);
+            transition: var(--transition);
+        }
+
+        .nav-item a:hover {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(106, 90, 249, 0.1) 100%);
+            color: var(--primary);
+            transform: translateX(5px);
+            border-color: var(--primary-light);
+        }
+
+        .nav-item a.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        /* Main Content Card */
+        .content-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 107, 157, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(106, 90, 249, 0.05) 100%);
+            border-bottom: 2px dashed rgba(255, 107, 157, 0.2);
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            border: 2px solid #e6e6ff;
+            border-radius: 16px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.2);
+            background: white;
+        }
+
+        .form-control-lg {
+            padding: 16px 20px;
+            border-radius: 16px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            padding-bottom: 12px;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed rgba(255, 107, 157, 0.2);
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 16px;
+            padding: 14px 30px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border: none;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-outline-secondary {
+            border-color: #ddd;
+            color: #777;
+        }
+
+        .btn-outline-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(255, 107, 157, 0.05);
+        }
+
+        /* Icons */
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(106, 90, 249, 0.1) 100%);
+            color: var(--primary);
+        }
+
+        /* Animation Classes */
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .btn-lg {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+
+            .sidebar-card, .content-card {
+                border-radius: 20px;
+            }
+        }
+
+        /* Decorative Elements */
+        .decorative-dots {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-image: radial-gradient(var(--primary-light) 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .decorative-dots-1 {
+            top: 5%;
+            right: 5%;
+        }
+
+        .decorative-dots-2 {
+            bottom: 10%;
+            left: 3%;
+        }
+    </style>
+</head>
+<body>
+<!-- Decorative Background Elements -->
+<div class="decorative-dots decorative-dots-1"></div>
+<div class="decorative-dots decorative-dots-2"></div>
+
+<div class="container py-5 animate-fade-in">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-5">
+            <div class="sidebar-card animate-slide-up">
+                <div class="card-body p-4">
+                    <!-- Profile Header -->
+                    <div class="text-center mb-5">
+                        <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px;">
+                            {% if app.user.firstName %}
+                                <span class="display-4 fw-bold" style="font-size: 3rem;">
+                                        {{ app.user.firstName|first|upper }}{{ app.user.lastName|first|upper }}
+                                    </span>
+                            {% else %}
+                                <i class="fas fa-user" style="font-size: 3rem;"></i>
+                            {% endif %}
                         </div>
+                        <h5 class="fw-bold mb-2">{{ app.user.firstName }} {{ app.user.lastName }}</h5>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>{{ app.user.email }}
+                        </p>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar-alt me-1"></i>Member since {{ app.user.createdAt|date('M Y') }}
+                        </small>
 
-                        <div class="list-group list-group-flush">
-                            <a href="{{ path('app_user_dashboard') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-tachometer-alt me-3 text-primary"></i>
-                                Dashboard
-                            </a>
-                            <a href="{{ path('app_user_profile') }}" class="list-group-item list-group-item-action border-0 py-3 active">
-                                <i class="fas fa-user-edit me-3 text-primary"></i>
-                                Edit Profile
-                            </a>
-                            <a href="{{ path('app_user_settings') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-cog me-3 text-primary"></i>
-                                Settings
-                            </a>
-                            <a href="{{ path('app_meal_plan_index') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-utensils me-3 text-primary"></i>
-                                Meal Plans
-                            </a>
-                            <a href="{{ path('app_workout_index') }}" class="list-group-item list-group-item-action border-0 py-3">
-                                <i class="fas fa-dumbbell me-3 text-primary"></i>
-                                Workouts
-                            </a>
-                            <a href="{{ path('app_logout') }}" class="list-group-item list-group-item-action border-0 py-3 text-danger">
-                                <i class="fas fa-sign-out-alt me-3"></i>
-                                Logout
-                            </a>
+                        <!-- Cute Status Badge -->
+                        <div class="mt-3">
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, var(--accent) 0%, #2dd4bf 100%); color: white; padding: 8px 16px;">
+                                    <i class="fas fa-heart me-1"></i> Active Member
+                                </span>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Main Content -->
-            <div class="col-lg-9">
-                <div class="card border-0 shadow-lg rounded-4">
-                    <div class="card-header bg-white border-0 py-4">
-                        <h2 class="fw-bold mb-0">
-                            <i class="fas fa-user-edit me-2"></i>Edit Profile
-                        </h2>
-                        <p class="text-muted mb-0">Update your personal information and fitness goals</p>
-                    </div>
-                    <div class="card-body p-4">
-                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-
-                        <!-- Personal Information -->
-                        <div class="mb-5">
-                            <h4 class="fw-bold mb-4 text-primary">
-                                <i class="fas fa-user-circle me-2"></i>Personal Information
-                            </h4>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.firstName) }}
-                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        <div class="invalid-feedback">
-                                            Please enter your first name.
-                                        </div>
-                                    </div>
+                    <!-- Navigation -->
+                    <div class="nav-items">
+                        <div class="nav-item">
+                            <a href="{{ path('app_user_dashboard') }}" class="d-flex align-items-center">
+                                <div class="icon-circle">
+                                    <i class="fas fa-tachometer-alt"></i>
                                 </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.lastName) }}
-                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        <div class="invalid-feedback">
-                                            Please enter your last name.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.email) }}
-                                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        <div class="invalid-feedback">
-                                            Please enter a valid email address.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.age) }}
-                                        {{ form_widget(form.age, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                    </div>
-                                </div>
-                            </div>
+                                <span>Dashboard</span>
+                            </a>
                         </div>
 
-                        <!-- Fitness Information -->
-                        <div class="mb-5">
-                            <h4 class="fw-bold mb-4 text-success">
-                                <i class="fas fa-running me-2"></i>Fitness Information
-                            </h4>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.weight) }}
-                                        {{ form_widget(form.weight, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        <small class="form-text text-muted">Enter weight in kilograms (kg)</small>
-                                    </div>
+                        <div class="nav-item">
+                            <a href="{{ path('app_user_profile') }}" class="d-flex align-items-center active">
+                                <div class="icon-circle">
+                                    <i class="fas fa-user-edit"></i>
                                 </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.height) }}
-                                        {{ form_widget(form.height, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                        <small class="form-text text-muted">Enter height in centimeters (cm)</small>
-                                    </div>
-                                </div>
-                            </div>
+                                <span>Edit Profile</span>
+                                <span class="ms-auto">
+                                        <i class="fas fa-sparkle text-warning"></i>
+                                    </span>
+                            </a>
                         </div>
 
-                        <!-- Goals & Preferences -->
-                        <div class="mb-5">
-                            <h4 class="fw-bold mb-4 text-warning">
-                                <i class="fas fa-bullseye me-2"></i>Goals & Preferences
-                            </h4>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.goal) }}
-                                        {{ form_widget(form.goal, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                    </div>
+                        <div class="nav-item">
+                            <a href="{{ path('app_user_settings') }}" class="d-flex align-items-center">
+                                <div class="icon-circle">
+                                    <i class="fas fa-cog"></i>
                                 </div>
-                                <div class="col-md-6 mb-4">
-                                    <div class="form-group">
-                                        {{ form_label(form.activityLevel) }}
-                                        {{ form_widget(form.activityLevel, {'attr': {'class': 'form-control form-control-lg'}}) }}
-                                    </div>
-                                </div>
-                            </div>
+                                <span>Settings</span>
+                            </a>
                         </div>
 
-                        <!-- Form Actions -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between">
-                                    <a href="{{ path('app_user_dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
-                                        <i class="fas fa-arrow-left me-2"></i>Cancel
-                                    </a>
-                                    <button type="submit" class="btn btn-primary btn-lg px-5">
-                                        <i class="fas fa-save me-2"></i>Save Changes
-                                    </button>
+                        <div class="nav-item">
+                            <a href="{{ path('app_meal_plan_index') }}" class="d-flex align-items-center">
+                                <div class="icon-circle">
+                                    <i class="fas fa-utensils"></i>
                                 </div>
-                            </div>
+                                <span>Meal Plans</span>
+                            </a>
                         </div>
 
-                        {{ form_end(form) }}
+                        <div class="nav-item">
+                            <a href="{{ path('app_workout_index') }}" class="d-flex align-items-center">
+                                <div class="icon-circle">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <span>Workouts</span>
+                            </a>
+                        </div>
+
+                        <!-- Logout with cute styling -->
+                        <div class="nav-item mt-4">
+                            <a href="{{ path('app_logout') }}" class="d-flex align-items-center text-danger">
+                                <div class="icon-circle" style="background: rgba(255, 107, 157, 0.1);">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </div>
+                                <span>Logout</span>
+                                <span class="ms-auto">
+                                        <i class="fas fa-arrow-right-from-bracket"></i>
+                                    </span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <div class="content-card animate-slide-up" style="animation-delay: 0.2s;">
+                <div class="card-header border-0 py-4 px-5">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle" style="width: 60px; height: 60px;">
+                            <i class="fas fa-user-edit fa-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1" style="color: var(--dark);">Edit Your Profile</h2>
+                            <p class="text-muted mb-0">Update your personal information and fitness goals 💖</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-5">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation animate-slide-up', 'novalidate': 'novalidate', 'style': 'animation-delay: 0.4s;'}}) }}
+
+                    <!-- Personal Information -->
+                    <div class="mb-5">
+                        <div class="section-header">
+                            <h4 class="fw-bold d-flex align-items-center" style="color: var(--primary);">
+                                <i class="fas fa-user-circle me-3"></i>Personal Information
+                            </h4>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.firstName, 'First Name', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 107, 157, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </span>
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your first name'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Your beautiful first name
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.lastName, 'Last Name', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 107, 157, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-users text-primary"></i>
+                                            </span>
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your last name'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Your family name
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.email, 'Email Address', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 107, 157, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-envelope text-primary"></i>
+                                            </span>
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'your.email@example.com'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> We'll never share your email
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.age, 'Age', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 107, 157, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-birthday-cake text-primary"></i>
+                                            </span>
+                                        {{ form_widget(form.age, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter your age'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Helps us customize your experience
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fitness Information -->
+                    <div class="mb-5">
+                        <div class="section-header">
+                            <h4 class="fw-bold d-flex align-items-center" style="color: var(--accent);">
+                                <i class="fas fa-running me-3"></i>Fitness Information
+                            </h4>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.weight, 'Weight', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(66, 226, 184, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-weight text-success"></i>
+                                            </span>
+                                        {{ form_widget(form.weight, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'e.g., 65.5'}}) }}
+                                        <span class="input-group-text" style="background: rgba(66, 226, 184, 0.1); border-color: #e6e6ff; border-left: none;">
+                                                kg
+                                            </span>
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Enter weight in kilograms (kg)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.height, 'Height', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(66, 226, 184, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-ruler-vertical text-success"></i>
+                                            </span>
+                                        {{ form_widget(form.height, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'e.g., 175'}}) }}
+                                        <span class="input-group-text" style="background: rgba(66, 226, 184, 0.1); border-color: #e6e6ff; border-left: none;">
+                                                cm
+                                            </span>
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> Enter height in centimeters (cm)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goals & Preferences -->
+                    <div class="mb-5">
+                        <div class="section-header">
+                            <h4 class="fw-bold d-flex align-items-center" style="color: #ff9d5c;">
+                                <i class="fas fa-bullseye me-3"></i>Goals & Preferences
+                            </h4>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.goal, 'Fitness Goal', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 157, 92, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-flag text-warning"></i>
+                                            </span>
+                                        {{ form_widget(form.goal, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> What's your main fitness goal?
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <div class="form-group">
+                                    {{ form_label(form.activityLevel, 'Activity Level', {'label_attr': {'class': 'form-label'}}) }}
+                                    <div class="input-group">
+                                            <span class="input-group-text" style="background: rgba(255, 157, 92, 0.1); border-color: #e6e6ff; border-right: none;">
+                                                <i class="fas fa-fire text-warning"></i>
+                                            </span>
+                                        {{ form_widget(form.activityLevel, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                                    </div>
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> How active are you daily?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{{ path('app_user_dashboard') }}" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                </a>
+
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                    <i class="fas fa-sparkle ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+            <!-- Cute Footer Note -->
+            <div class="text-center mt-4 animate-fade-in" style="animation-delay: 0.8s;">
+                <p class="text-muted">
+                    <i class="fas fa-heart text-primary me-1"></i>
+                    Your fitness journey is unique and beautiful!
+                    <i class="fas fa-heart text-primary ms-1"></i>
+                </p>
+            </div>
+        </div>
     </div>
+</div>
 
-    <style>
-        .avatar-circle {
-            transition: transform 0.3s;
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Simple form validation and animations -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add floating animation to avatar
+        const avatar = document.querySelector('.avatar-circle');
+        if (avatar) {
+            setInterval(() => {
+                avatar.style.transform = 'translateY(-5px)';
+                setTimeout(() => {
+                    avatar.style.transform = 'translateY(0)';
+                }, 1000);
+            }, 3000);
         }
 
-        .avatar-circle:hover {
-            transform: scale(1.05);
-        }
+        // Add interaction to form inputs
+        const formInputs = document.querySelectorAll('.form-control');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.parentElement.classList.add('focus');
+            });
 
-        .list-group-item.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
-        }
+            input.addEventListener('blur', function() {
+                this.parentElement.parentElement.classList.remove('focus');
+            });
+        });
 
-        .form-control-lg {
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-        }
+        // Add sparkle animation to save button on hover
+        const saveButton = document.querySelector('button[type="submit"]');
+        if (saveButton) {
+            saveButton.addEventListener('mouseenter', function() {
+                const sparkle = this.querySelector('.fa-sparkle');
+                if (sparkle) {
+                    sparkle.classList.add('fa-spin');
+                }
+            });
 
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+            saveButton.addEventListener('mouseleave', function() {
+                const sparkle = this.querySelector('.fa-sparkle');
+                if (sparkle) {
+                    sparkle.classList.remove('fa-spin');
+                }
+            });
         }
-
-        .rounded-4 {
-            border-radius: 1rem !important;
-        }
-
-        @media (max-width: 768px) {
-            .btn-lg {
-                padding: 0.75rem 1rem;
-                font-size: 1rem;
-            }
-        }
-    </style>
-{% endblock %}
+    });
+</script>
+</body>
+</html>

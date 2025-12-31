@@ -11,40 +11,44 @@ class PdfGeneratorService
 {
     public function __construct(
         private Environment $twig
-    ) {}
+    ) {
+    }
 
     public function generateMealPlanPdf(MealPlan $mealPlan): string
     {
-        // Configure Dompdf
+        // Configure Dompdf options
         $options = new Options();
-        $options->set('defaultFont', 'sans-serif');
+        $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isRemoteEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('tempDir', sys_get_temp_dir());
+        // Removed fontDir and fontCache since they require projectDir
 
         $dompdf = new Dompdf($options);
 
-        // Render the Twig template to HTML
+        // FIXED: Updated template path to match your actual template
         $html = $this->twig->render('pdf/meal_plan.html.twig', [
-            'mealPlan' => $mealPlan,
+            'meal_plan' => $mealPlan,
         ]);
 
         $dompdf->loadHtml($html);
 
-        // (Optional) Setup the paper size and orientation
+        // Setup the paper size and orientation
         $dompdf->setPaper('A4', 'portrait');
 
         // Render the HTML as PDF
         $dompdf->render();
 
-        // Get the PDF output
-        $output = $dompdf->output();
-
         // Generate a unique filename
-        $filename = sprintf('meal_plan_%s_%s.pdf', $mealPlan->getUser()->getId(), (new \DateTime())->format('YmdHis'));
+        $filename = sprintf('meal_plan_%s_%s.pdf',
+            $mealPlan->getId(),
+            (new \DateTime())->format('Ymd_His')
+        );
         $filePath = sys_get_temp_dir() . '/' . $filename;
 
         // Save the PDF to a temporary file
-        file_put_contents($filePath, $output);
+        file_put_contents($filePath, $dompdf->output());
 
         return $filePath;
     }

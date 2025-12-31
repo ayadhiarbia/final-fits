@@ -1,7 +1,11 @@
 security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-        App\Entity\User: 'auto'  # Add this line specifically for your User entity
+        App\Entity\User: 'auto'
+
+    # ADD THIS - CRITICAL!
+    role_hierarchy:
+        ROLE_ADMIN: ROLE_USER
 
     providers:
         app_user_provider:
@@ -18,35 +22,39 @@ security:
             lazy: true
             provider: app_user_provider
 
-            # ADD THIS FORM LOGIN CONFIGURATION
             form_login:
-                login_path: app_login           # Route where login form is displayed
-                check_path: app_login           # Route where login form is submitted
-                enable_csrf: true               # Security feature
-                default_target_path: app_home   # Where to redirect after successful login
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                default_target_path: app_user_dashboard  # ← CHANGED: user dashboard, not home
+                # success_handler: App\Security\AuthenticationSuccessHandler  # Optional
 
-            # Add logout configuration
             logout:
                 path: app_logout
                 target: app_home
 
-            # Optional: remember me feature
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800  # 1 week in seconds
+                lifetime: 604800
                 path: /
 
-    # ADD ACCESS CONTROL RULES
+    # FIXED ACCESS CONTROL RULES (ORDER MATTERS!)
     access_control:
         # Public routes
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/home$, roles: PUBLIC_ACCESS }
+        - { path: ^/about$, roles: PUBLIC_ACCESS }
+        - { path: ^/contact$, roles: PUBLIC_ACCESS }
 
-        # Admin routes
+        # Admin routes - MUST come before user routes if both match same pattern
         - { path: ^/admin, roles: ROLE_ADMIN }
 
-        # Protected user routes (everything else)
+        # User routes - specific prefix for user dashboard
+        - { path: ^/user, roles: ROLE_USER }
+
+        # All other routes require login
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

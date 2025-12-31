@@ -3,10 +3,11 @@
 namespace App\Controller\admin;
 
 use App\Entity\Progress;
-use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
@@ -20,70 +21,55 @@ class ProgressCrudController extends AbstractCrudController
         return Progress::class;
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setPageTitle('index', 'User Progress')
+            ->setPageTitle('detail', 'Progress Details')
+            ->setDefaultSort(['createdAt' => 'DESC']);
+    }
+
+    public function configureActions(Actions $actions): Actions
+    {
+        // Remove the "Add" action - this prevents admin from creating new progress
+        return $actions
+            ->disable(Action::NEW);
+    }
+
     public function configureFields(string $pageName): iterable
     {
         return [
-            IdField::new('id')->hideOnForm(),
+            IdField::new('id')
+                ->hideOnForm()
+                ->onlyOnDetail(),
 
-            // Show weight as a number field
             NumberField::new('weight')
-                ->setNumDecimals(1) // Shows 1 decimal place
-                ->setHelp('Enter weight in kg'),
+                ->setNumDecimals(1)
+                ->formatValue(function ($value) {
+                    return $value . ' kg';
+                })
+                ->hideOnForm(),
 
-            // Photo upload field
             ImageField::new('photo')
                 ->setBasePath('uploads/progress')
-                ->setUploadDir('public/uploads/progress')
-                ->setUploadedFileNamePattern('[randomhash].[extension]')
-                ->setRequired(false),
+                ->setRequired(false)
+                ->hideOnForm()
+                ->formatValue(function ($value) {
+                    if (!$value) {
+                        return 'No photo';
+                    }
+                    return sprintf('<img src="%s" width="50" height="50" style="object-fit: cover;">', $value);
+                }),
 
-            // Note as textarea
             TextareaField::new('note')
-                ->setHelp('Optional notes about your progress')
-                ->hideOnIndex(), // Hide on index page to save space
+                ->hideOnIndex()
+                ->hideOnForm(),
 
-            // Created at - readonly
             DateTimeField::new('createdAt')
-                ->hideOnForm(), // Can't edit creation date
+                ->hideOnForm(),
 
-            // User field - hide it from form since we set it automatically
             AssociationField::new('user')
-                ->hideOnForm(), // Don't show on form
+                ->hideOnForm(),
         ];
-    }
-
-    /**
-     * This is the key fix - automatically set the current user
-     * when creating a new Progress entity
-     */
-    public function createEntity(string $entityFqcn)
-    {
-        $progress = new Progress();
-
-        // Automatically set the current logged-in user
-        $user = $this->getUser();
-
-        if ($user) {
-            $progress->setUser($user);
-        } else {
-            // This shouldn't happen if your admin requires login
-            // but it's good practice to handle it
-            throw new \RuntimeException('No user is logged in.');
-        }
-
-        return $progress;
-    }
-
-    /**
-     * Optional: Override persistEntity for extra safety
-     */
-    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
-    {
-        // Double-check that user is set
-        if (!$entityInstance->getUser()) {
-            $entityInstance->setUser($this->getUser());
-        }
-
-        parent::persistEntity($entityManager, $entityInstance);
     }
 }
